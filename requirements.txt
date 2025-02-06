@@ -7,4 +7,5 @@ pyOpenSSL==25.0.0
 serialization==1.2.3
 SpeechRecognition==3.14.1
 Twisted==24.11.0
-
+google-genai
+python-dotenv
