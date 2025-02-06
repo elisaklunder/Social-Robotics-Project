@@ -1,0 +1,10 @@
+alpha_mini_rug==0.4.1
+autobahn==24.4.2
+msgpack==1.1.0
+numpy==2.2.2
+pillow==11.1.0
+pyOpenSSL==25.0.0
+serialization==1.2.3
+SpeechRecognition==3.14.1
+Twisted==24.11.0
+
