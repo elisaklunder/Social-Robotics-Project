@@ -73,6 +73,7 @@ class GameMaster:
                 word_array = self.audio_processor.give_me_words()
                 print("I'm processing the words")
                 print(word_array)  # print last 3 sentences
+                
 
             self.audio_processor.loop()
 
