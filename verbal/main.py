@@ -5,23 +5,28 @@ from autobahn.twisted.component import Component, run
 from autobahn.twisted.util import sleep
 from twisted.internet.defer import inlineCallbacks
 
+class Blabber:
+    def __init__(self):
+        self.LLM = None
+        
+    def ask(self, input):
+        return f"Did you say {input}?"
 
 class GameMaster:
     def __init__(self, session):
         self.session = session
         self.audio_processor = SpeechToText()
         self.audio_processor.silence_time = 0.5  # when to stop recording
-        self.audio_processor.silence_threshold2 = (
-            100  # any sound recorded below this value is considered silence
-        )
+        self.audio_processor.silence_threshold2 = 100  # hearing threshold
         self.audio_processor.logging = (
             False  # set to true if you want to see all the output
         )
+        self.conversation_engine = Blabber()
 
     @inlineCallbacks
     def default_state(self):
         yield self.session.call("rom.optional.behavior.play", name="BlocklyStand")
-        
+
     @inlineCallbacks
     def start_game(self):
         yield self.dialogue()
@@ -36,19 +41,15 @@ class GameMaster:
 
     @inlineCallbacks
     def dialogue(self):
-        # Define the file path
+        # Store recording
         output_dir = "output"
         output_file = os.path.join(output_dir, "output.wav")
-
-        # Create the directory if it doesn't exist
         os.makedirs(output_dir, exist_ok=True)
-
-        # Create the file if it doesn't exist
         if not os.path.exists(output_file):
             with open(output_file, "wb") as f:
                 f.write(b"")
 
-        # Write an empty byte string to create the file
+        # Actually record
         yield self.STT_continuous()
 
     @inlineCallbacks
@@ -71,10 +72,13 @@ class GameMaster:
                 print("I am recording")
             else:
                 word_array = self.audio_processor.give_me_words()
-                print("I'm processing the words")
-                print(word_array)  # print last 3 sentences
+                print(word_array)
+                user_input = word_array[-1]
+                robot_answer = self.conversation_engine.ask(user_input)
+                yield self.session.call("rie.dialogue.say_animated", text=robot_answer, lang="en")
 
             self.audio_processor.loop()
+
 
 @inlineCallbacks
 def main(session, details):
