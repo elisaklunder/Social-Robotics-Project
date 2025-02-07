@@ -4,20 +4,14 @@ from alpha_mini_rug.speech_to_text import SpeechToText
 from autobahn.twisted.component import Component, run
 from autobahn.twisted.util import sleep
 from twisted.internet.defer import inlineCallbacks
-
-class Blabber:
-    def __init__(self):
-        self.LLM = None
-        
-    def ask(self, input):
-        return f"Did you say {input}?"
+from gemini import Blabber
 
 class GameMaster:
     def __init__(self, session):
         self.session = session
         self.audio_processor = SpeechToText()
-        self.audio_processor.silence_time = 0.5  # when to stop recording
-        self.audio_processor.silence_threshold2 = 100  # hearing threshold
+        self.audio_processor.silence_time = 0.2 # when to stop recording
+        self.audio_processor.silence_threshold2 = 50  # hearing threshold
         self.audio_processor.logging = (
             False  # set to true if you want to see all the output
         )
@@ -59,7 +53,7 @@ class GameMaster:
 
         yield self.session.call("rom.sensor.hearing.sensitivity", 1650)
         yield self.session.call("rie.dialogue.config.language", lang="en")
-        yield self.session.call("rie.dialogue.say", text="Say something")
+        yield self.session.call("rie.dialogue.say", text="Nice to meet you, I am Alphamini! What's your name?")
         print("listening to audio")
 
         yield self.session.subscribe(
@@ -72,7 +66,7 @@ class GameMaster:
                 print("I am recording")
             else:
                 word_array = self.audio_processor.give_me_words()
-                print(word_array)
+                print(word_array[-1])
                 user_input = word_array[-1]
                 robot_answer = self.conversation_engine.ask(user_input)
                 yield self.session.call("rie.dialogue.say_animated", text=robot_answer, lang="en")
@@ -95,7 +89,7 @@ wamp = Component(
             "max_retries": 0,
         }
     ],
-    realm="rie.67a489ba85ba37f92bb13c72",
+    realm="rie.67a5dc7385ba37f92bb14557",
 )
 
 wamp.on_join(main)
