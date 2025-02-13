@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 
-load_dotenv()  # Load the environment variables from .env
+load_dotenv() 
 api_key = os.getenv("GOOGLE_API")
 
 
