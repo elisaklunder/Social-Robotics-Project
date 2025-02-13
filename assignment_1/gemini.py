@@ -9,6 +9,13 @@ api_key = os.getenv("GOOGLE_API")
 
 
 class Blabber:
+    """
+    A class for interacting with the Gemini AI model for chat-based conversations.
+
+    Requirements:
+        - A valid Gemini API key
+        - A 'prompt.txt' file in the same folder containing system instructions
+    """
     def __init__(self):
         client = genai.Client(api_key=api_key)
         
@@ -23,5 +30,14 @@ class Blabber:
         )
 
     def ask(self, input):
+        """
+        Sends a message to the chat and returns the AI's response
+
+        Args:
+            input (str): the input message to send to the AI
+
+        Returns:
+            str: the response from the AI
+        """
         response = self.chat.send_message(input)
         return response.text
