@@ -11,7 +11,7 @@ class GameMaster:
         self.session = session
         self.audio_processor = SpeechToText()
         self.audio_processor.silence_time = 0.2 # when to stop recording
-        self.audio_processor.silence_threshold2 = 50  # hearing threshold
+        self.audio_processor.silence_threshold2 = 400  # hearing threshold
         self.audio_processor.logging = (
             False  # set to true if you want to see all the output
         )
@@ -53,8 +53,8 @@ class GameMaster:
 
         yield self.session.call("rom.sensor.hearing.sensitivity", 1650)
         yield self.session.call("rie.dialogue.config.language", lang="en")
+
         yield self.session.call("rie.dialogue.say", text="Nice to meet you, I am Alphamini! What's your name?")
-        print("listening to audio")
 
         yield self.session.subscribe(
             self.audio_processor.listen_continues, "rom.sensor.hearing.stream"
@@ -69,9 +69,20 @@ class GameMaster:
                 print(word_array[-1])
                 user_input = word_array[-1]
                 robot_answer = self.conversation_engine.ask(user_input)
-                yield self.session.call("rie.dialogue.say_animated", text=robot_answer, lang="en")
+                
+                answer_length = len(robot_answer.split(" "))
+                silence_seconds = 0.34 * answer_length
 
+                if "goodbye" in robot_answer.lower():
+                    yield self.session.call("rie.dialogue.say_animated", text=robot_answer, lang="en")
+                    break
+                
+                self.session.call("rie.dialogue.say_animated", text=robot_answer, lang="en")
+                # yield sleep(silence_seconds)
+                
             self.audio_processor.loop()
+        
+        yield self.session.call("rom.optional.behavior.play", name="BlocklyCrouch")
 
 
 @inlineCallbacks
@@ -89,7 +100,7 @@ wamp = Component(
             "max_retries": 0,
         }
     ],
-    realm="rie.67a5dc7385ba37f92bb14557",
+    realm="rie.67adc33985ba37f92bb17021",
 )
 
 wamp.on_join(main)
