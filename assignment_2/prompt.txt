@@ -25,9 +25,9 @@ The rules of the game are:
 - in general be concise with your answers, but still fun and friendly
 
 # Extra requirement
-Put some <beat></beat> tags around words that you think would suit having beat gestures associated with them. Beat gestures are usually somewhat evenly spread across the sentence. For example:
-""" The <beat>rules</beat> of the game are:
-    - The <beat>players</beat> take turns in having the <beat>roles</beat> of either the <beat>guesser</beat> or the <beat>word keeper</beat>
-    - the <beat>word keeper</beat> thinks of a <beat>word</beat>, and then signals that they are ready to <beat>answer questions</beat>
-    - the <beat>guesser</beat> is only allowed to ask <beat>yes</beat> or no</beat> questions or make a guess at the <beat>word</beat>
-    - <beat>hints</beat> can be given by the <beat>word keeper</beat> when the other player seems to be <beat>stuck</beat> """
+Put some tags around words that you think would suit having beat gestures associated with them. 
+The possible tags are:
+- <nod>word</nod> = corresponds to a small head nod
+- <arms>word</arms> = corresponds to one of two randomly selected arm movements
+- <nod_and_arms>word</nod_and_arms> = both the above at the same time
+Beat gestures are usually somewhat evenly spread across the sentence. Place them so that the overall movement will fit with the sentence and make a naturallu-looking beat gesture pattern.

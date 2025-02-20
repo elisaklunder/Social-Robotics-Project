@@ -1,73 +1,97 @@
-import os
-
-from alpha_mini_rug.speech_to_text import SpeechToText
-from autobahn.twisted.component import Component, run
-from autobahn.twisted.util import sleep
-from dotenv import load_dotenv
-from twisted.internet.defer import inlineCallbacks
-from autobahn.twisted.component import Component, run
-from twisted.internet.defer import inlineCallbacks
 from alpha_mini_rug import movements
 
-load_dotenv()
-REALM = os.getenv("REALM")
+arms_upper_default = 0.1
+arms_lower_default = -1.0
 
-class GestureControl:
-
-    def __init__(self, session):
-        self.session = session
-
-    @inlineCallbacks
-    def nod(self):
-        # Nod yes
-        yield movements.perform_movement(self.session,
-                     frames=[{"time": 400, "data": {"body.head.pitch": 0.1}},
-                             {"time": 1200,"data": {"body.head.pitch": -0.1}},
-                               {"time": 2000, "data": {"body.head.pitch": 0.1}},
-                                {"time": 2400, "data": {"body.head.pitch": 0.0}}],
-                                force=True)
-
-    @inlineCallbacks    
-    def shake_head(self):
-        # Shake no
-        # yaw
-        yield movements.perform_movement(self.session,
-                     frames=[{"time": 400, "data": {"body.head.yaw": 0.1}},
-                             {"time": 1200,"data": {"body.head.yaw": -0.1}},
-                               {"time": 2000, "data": {"body.head.yaw": 0.1}},
-                                {"time": 2400, "data": {"body.head.yaw": 0.0}}],
-                                force=True)
-        
-    def beat_gesture_1(self):
-        pass
-
-    def beat_gesture_2(self):
-        pass
-    
-    def emotional_gesture(self):
-        pass
+def nod(tag_positions=None):
+    frames = []
+    frames.append({"time": 0, "data": {"body.head.pitch": 0.0}})
+    for tag in tag_positions:
+        tag_time = int((tag["syllable_position"] / 4) * 1000)
+        frames.append({"time": tag_time - 400, "data": {"body.head.pitch": 0.0}})
+        frames.append({"time": tag_time, "data": {"body.head.pitch": -0.1}})
+        frames.append({"time": tag_time + 400, "data": {"body.head.pitch": 0.0}})
+    frames.append({"time": 0, "data": {"body.head.pitch": 0.0}})
+    return frames
 
 
-@inlineCallbacks
-def main(session, details):
-    gestures = GestureControl(session)
-    yield gestures.nod()
-    session.leave() # Close the connection with the robot
+def shake_head(self):
+    # Shake no
+    # yaw
+    yield movements.perform_movement(
+        self.session,
+        frames=[
+            {"time": 400, "data": {"body.head.yaw": 0.1}},
+            {"time": 1200, "data": {"body.head.yaw": -0.1}},
+            {"time": 2000, "data": {"body.head.yaw": 0.1}},
+            {"time": 2400, "data": {"body.head.yaw": 0.0}},
+        ],
+        force=True,
+    )
 
 
-# create wamp connection
-wamp = Component(
-    transports=[
+def arm_gesture_1(tag_positions=None):
+    frames = []
+    frames.append(
         {
-            "url": "ws://wamp.robotsindeklas.nl",
-            "serializers": ["msgpack"],
-            "max_retries": 0,
+            "time": 0,
+            "data": {
+                "body.arms.right.upper.pitch": arms_upper_default,
+                "body.arms.right.lower.roll": arms_lower_default,
+            },
         }
-    ],
-    realm=REALM,
-)
+    )
+    for tag in tag_positions:
+        if tag["tag"] == "arms":
+            tag_time = int((tag["syllable_position"] / 4) * 1000)
+            frames.append(
+                {
+                    "time": tag_time - 800,
+                    "data": {
+                        "body.arms.right.upper.pitch": -0.5,
+                        "body.arms.right.lower.roll": arms_lower_default,
+                    },
+                }
+            )
+            frames.append(
+                {
+                    "time": tag_time - 400,
+                    "data": {
+                        "body.arms.right.upper.pitch": -0.5,
+                        "body.arms.right.lower.roll": -0.8,
+                    },
+                }
+            )
+            frames.append(
+                {
+                    "time": tag_time,
+                    "data": {
+                        "body.arms.right.upper.pitch": -0.5,
+                        "body.arms.right.lower.roll": arms_lower_default,
+                    },
+                }
+            )
+            frames.append(
+                {
+                    "time": tag_time + 400,
+                    "data": {
+                        "body.arms.right.upper.pitch": arms_upper_default,
+                        "body.arms.right.lower.roll": -arms_lower_default,
+                    },
+                }
+            )
+            
+    return frames
 
-wamp.on_join(main)
 
-if __name__ == "__main__":
-    run([wamp])
+def arm_gesture_2(self):
+    pass
+
+
+def emotional_gesture(self):
+    pass
+
+
+def make_gestures(tag_positions=None):
+    frames = arm_gesture_1(tag_positions)
+    return frames
