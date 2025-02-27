@@ -5,10 +5,11 @@ from alpha_mini_rug.speech_to_text import SpeechToText
 from autobahn.twisted.component import Component, run
 from autobahn.twisted.util import sleep
 from dotenv import load_dotenv
-from gestures import make_gestures
+from gestures import make_gestures, arms_lower_default, arms_upper_default, body_head_pitch_default
 from gemini import Blabber
 from tagger import process_tagged_text
 from twisted.internet.defer import inlineCallbacks
+
 
 load_dotenv()
 REALM = os.getenv("REALM")
@@ -46,7 +47,18 @@ class GameMaster:
             inlineCallbacks: Coroutine that executes the BlocklyStand behavior
         """
         yield self.session.call("rom.optional.behavior.play", name="BlocklyStand")
-
+        frame = [{
+            "time": 0,
+            "data": {
+                "body.head.pitch": body_head_pitch_default,
+                "body.arms.right.upper.pitch": arms_upper_default,
+                "body.arms.right.lower.roll": arms_lower_default,
+            },
+        }]
+        yield movements.perform_movement(
+            self.session, frames=frame, force=True
+        )
+        
     @inlineCallbacks
     def start_game(self):
         """
@@ -123,25 +135,22 @@ class GameMaster:
                 print("I am recording")
             else:
                 word_array = self.audio_processor.give_me_words()
-                print(word_array[-1])
+                print("heard: ", word_array[-1])
                 user_input = word_array[-1]
                 answer = self.conversation_engine.ask(user_input)
-                print(answer)
+                print("answer: ", answer)
                 
                 tag_positions, cleaned_answer = process_tagged_text(answer)
-
-                print([tag["content"] for tag in tag_positions])
-
-                frames = make_gestures(tag_positions)
+                frames, naughty_frame = make_gestures(tag_positions)
                 
-                print(frames)
-
+                print("frames: ", frames)
+                
+                sleep(naughty_frame["time"] / 1000)
+                
                 self.session.call("rie.dialogue.say", text=cleaned_answer, lang="en")
-                # yield movements.perform_movement(
-                #     self.session, frames=frames, force=True
-                # )
-                yield self.session.call(
-                    "rom.actuator.motor.write", frames=frames, force=True)
+                yield movements.perform_movement(
+                    self.session, frames=frames, force=True
+                )
 
                 # The loop continues until a 'goodbye' response is triggered
                 if "goodbye" in cleaned_answer.lower():
@@ -167,8 +176,6 @@ def main(session, details):
     """
     game_master = GameMaster(session)
     yield game_master.default_state()
-    
-    sleep(10)
     yield game_master.play_game()
 
 

@@ -30,4 +30,4 @@ The possible tags are:
 - <nod>word</nod> = corresponds to a small head nod
 - <arms>word</arms> = corresponds to one of two randomly selected arm movements
 - <nod_and_arms>word</nod_and_arms> = both the above at the same time
-Beat gestures are usually somewhat evenly spread across the sentence. Place them so that the overall movement will fit with the sentence and make a naturallu-looking beat gesture pattern.
+Beat gestures are usually somewhat evenly spread across the sentence. Place them so that the overall movement will fit with the sentence and make a naturallu-looking beat gesture pattern. Don't place beat tags in the first five words of your answer.
