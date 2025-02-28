@@ -7,6 +7,8 @@ head_yaw_default = 0.0
 head_roll_default = 0.0
 body_torso_yaw_default = 0.0
 
+def get_tag_time(start_position):
+    return int(((start_position - 1) / 4) * 1000)
 
 def hi():
     step_size = 400
@@ -23,7 +25,7 @@ def hi():
                 "body.arms.right.lower.roll": arms_lower_default,
                 "body.arms.left.upper.pitch": arms_upper_default,
                 "body.arms.left.lower.roll": arms_lower_default,
-                "body.torso.yaw": body_torso_yaw_default
+                "body.torso.yaw": body_torso_yaw_default,
             },
         }
     )
@@ -38,7 +40,7 @@ def hi():
                 "body.arms.right.lower.roll": arms_lower_default,
                 "body.arms.left.upper.pitch": arms_upper_default,
                 "body.arms.left.lower.roll": arms_lower_default,
-                "body.torso.yaw": body_torso_yaw_default
+                "body.torso.yaw": body_torso_yaw_default,
             },
         }
     )
@@ -53,7 +55,7 @@ def hi():
                 "body.arms.right.lower.roll": -0.4,
                 "body.arms.left.upper.pitch": arms_upper_default,
                 "body.arms.left.lower.roll": arms_lower_default,
-                "body.torso.yaw": body_torso_yaw_default
+                "body.torso.yaw": body_torso_yaw_default,
             },
         }
     )
@@ -68,7 +70,7 @@ def hi():
                 "body.arms.right.lower.roll": -1.2,
                 "body.arms.left.upper.pitch": arms_upper_default,
                 "body.arms.left.lower.roll": arms_lower_default,
-                "body.torso.yaw": body_torso_yaw_default
+                "body.torso.yaw": body_torso_yaw_default,
             },
         }
     )
@@ -83,7 +85,7 @@ def hi():
                 "body.arms.right.lower.roll": -0.4,
                 "body.arms.left.upper.pitch": arms_upper_default,
                 "body.arms.left.lower.roll": arms_lower_default,
-                "body.torso.yaw": body_torso_yaw_default
+                "body.torso.yaw": body_torso_yaw_default,
             },
         }
     )
@@ -98,7 +100,7 @@ def hi():
                 "body.arms.right.lower.roll": arms_lower_default,
                 "body.arms.left.upper.pitch": arms_upper_default,
                 "body.arms.left.lower.roll": arms_lower_default,
-                "body.torso.yaw": body_torso_yaw_default
+                "body.torso.yaw": body_torso_yaw_default,
             },
         }
     )
@@ -113,7 +115,7 @@ def hi():
                 "body.arms.right.lower.roll": arms_lower_default,
                 "body.arms.left.upper.pitch": arms_upper_default,
                 "body.arms.left.lower.roll": arms_lower_default,
-                "body.torso.yaw": body_torso_yaw_default
+                "body.torso.yaw": body_torso_yaw_default,
             },
         }
     )
@@ -124,7 +126,7 @@ def nod(tag_positions):
     frames = []
     for tag in tag_positions:
         if tag["tag"] == "nod":
-            tag_time = int((tag["start_position"] / 4) * 1000)
+            tag_time = get_tag_time(tag["start_position"])
             frames.append(
                 {
                     "time": tag_time,
@@ -136,58 +138,28 @@ def nod(tag_positions):
                         "body.arms.right.lower.roll": arms_lower_default,
                         "body.arms.left.upper.pitch": arms_upper_default,
                         "body.arms.left.lower.roll": arms_lower_default,
-                        "body.torso.yaw": body_torso_yaw_default
-                },
+                        "body.torso.yaw": body_torso_yaw_default,
+                    },
                 }
             )
             frames.append(
                 {
                     "time": tag_time + 400,
                     "data": {
-                        "body.head.pitch": 0.1,
+                        "body.head.pitch": 0.15,
                         "body.head.yaw": head_yaw_default,
                         "body.head.roll": head_roll_default,
                         "body.arms.right.upper.pitch": arms_upper_default,
                         "body.arms.right.lower.roll": arms_lower_default,
                         "body.arms.left.upper.pitch": arms_upper_default,
                         "body.arms.left.lower.roll": arms_lower_default,
-                        "body.torso.yaw": body_torso_yaw_default
+                        "body.torso.yaw": body_torso_yaw_default,
                     },
                 }
             )
             frames.append(
                 {
                     "time": tag_time + 800,
-                    "data": {
-                        "body.head.pitch": -0.1,
-                        "body.head.yaw": head_yaw_default,
-                        "body.head.roll": head_roll_default,
-                        "body.arms.right.upper.pitch": arms_upper_default,
-                        "body.arms.right.lower.roll": arms_lower_default,
-                        "body.arms.left.upper.pitch": arms_upper_default,
-                        "body.arms.left.lower.roll": arms_lower_default,
-                        "body.torso.yaw": body_torso_yaw_default
-                },
-                }
-            )
-            frames.append(
-                {
-                    "time": tag_time + 1200,
-                    "data": {
-                        "body.head.pitch": 0.1,
-                        "body.head.yaw": head_yaw_default,
-                        "body.head.roll": head_roll_default,
-                        "body.arms.right.upper.pitch": arms_upper_default,
-                        "body.arms.right.lower.roll": arms_lower_default,
-                        "body.arms.left.upper.pitch": arms_upper_default,
-                        "body.arms.left.lower.roll": arms_lower_default,
-                        "body.torso.yaw": body_torso_yaw_default
-                },
-                }
-            )
-            frames.append(
-                {
-                    "time": tag_time + 1600,
                     "data": {
                         "body.head.pitch": head_pitch_default,
                         "body.head.yaw": head_yaw_default,
@@ -196,8 +168,8 @@ def nod(tag_positions):
                         "body.arms.right.lower.roll": arms_lower_default,
                         "body.arms.left.upper.pitch": arms_upper_default,
                         "body.arms.left.lower.roll": arms_lower_default,
-                        "body.torso.yaw": body_torso_yaw_default
-                },
+                        "body.torso.yaw": body_torso_yaw_default,
+                    },
                 }
             )
     return frames
@@ -207,7 +179,7 @@ def shake_head(tag_positions):
     frames = []
     for tag in tag_positions:
         if tag["tag"] == "shake":
-            tag_time = int((tag["start_position"] / 4) * 1000)
+            tag_time = get_tag_time(tag["start_position"])
             frames.append(
                 {
                     "time": tag_time,
@@ -219,7 +191,7 @@ def shake_head(tag_positions):
                         "body.arms.right.lower.roll": arms_lower_default,
                         "body.arms.left.upper.pitch": arms_upper_default,
                         "body.arms.left.lower.roll": arms_lower_default,
-                        "body.torso.yaw": body_torso_yaw_default
+                        "body.torso.yaw": body_torso_yaw_default,
                     },
                 }
             )
@@ -234,7 +206,7 @@ def shake_head(tag_positions):
                         "body.arms.right.lower.roll": arms_lower_default,
                         "body.arms.left.upper.pitch": arms_upper_default,
                         "body.arms.left.lower.roll": arms_lower_default,
-                        "body.torso.yaw": body_torso_yaw_default
+                        "body.torso.yaw": body_torso_yaw_default,
                     },
                 }
             )
@@ -249,7 +221,7 @@ def shake_head(tag_positions):
                         "body.arms.right.lower.roll": arms_lower_default,
                         "body.arms.left.upper.pitch": arms_upper_default,
                         "body.arms.left.lower.roll": arms_lower_default,
-                        "body.torso.yaw": body_torso_yaw_default
+                        "body.torso.yaw": body_torso_yaw_default,
                     },
                 }
             )
@@ -264,7 +236,7 @@ def shake_head(tag_positions):
                         "body.arms.right.lower.roll": arms_lower_default,
                         "body.arms.left.upper.pitch": arms_upper_default,
                         "body.arms.left.lower.roll": arms_lower_default,
-                        "body.torso.yaw": body_torso_yaw_default
+                        "body.torso.yaw": body_torso_yaw_default,
                     },
                 }
             )
@@ -272,15 +244,14 @@ def shake_head(tag_positions):
     return frames
 
 
-
 def arm_gesture_1(tag_positions):
-    frames=[]
+    frames = []
     for tag in tag_positions:
         if tag["tag"] == "beat_1":
-            tag_time = int((tag["start_position"] / 4) * 1000)
+            tag_time = get_tag_time(tag["start_position"])
             frames.append(
                 {
-                    "time": tag_time - 1200,
+                    "time": tag_time,
                     "data": {
                         "body.head.pitch": head_pitch_default,
                         "body.head.yaw": head_yaw_default,
@@ -289,13 +260,13 @@ def arm_gesture_1(tag_positions):
                         "body.arms.right.lower.roll": arms_lower_default,
                         "body.arms.left.upper.pitch": arms_upper_default,
                         "body.arms.left.lower.roll": arms_lower_default,
-                        "body.torso.yaw": body_torso_yaw_default
+                        "body.torso.yaw": body_torso_yaw_default,
                     },
                 }
             )
             frames.append(
                 {
-                    "time": tag_time - 800,
+                    "time": tag_time + 400,
                     "data": {
                         "body.arms.right.upper.pitch": -0.7,
                         "body.arms.right.lower.roll": arms_lower_default,
@@ -304,13 +275,13 @@ def arm_gesture_1(tag_positions):
                         "body.head.pitch": head_pitch_default,
                         "body.head.yaw": head_yaw_default,
                         "body.head.roll": head_roll_default,
-                        "body.torso.yaw": body_torso_yaw_default
+                        "body.torso.yaw": body_torso_yaw_default,
                     },
                 }
             )
             frames.append(
                 {
-                    "time": tag_time - 400,
+                    "time": tag_time + 800,
                     "data": {
                         "body.head.yaw": head_yaw_default,
                         "body.head.pitch": head_pitch_default,
@@ -319,13 +290,13 @@ def arm_gesture_1(tag_positions):
                         "body.arms.right.lower.roll": -0.8,
                         "body.arms.left.upper.pitch": arms_upper_default,
                         "body.arms.left.lower.roll": arms_lower_default,
-                        "body.torso.yaw": body_torso_yaw_default
+                        "body.torso.yaw": body_torso_yaw_default,
                     },
                 }
             )
             frames.append(
                 {
-                    "time": tag_time,
+                    "time": tag_time + 1200,
                     "data": {
                         "body.head.yaw": head_yaw_default,
                         "body.head.pitch": head_pitch_default,
@@ -334,13 +305,13 @@ def arm_gesture_1(tag_positions):
                         "body.arms.right.lower.roll": arms_lower_default,
                         "body.arms.left.upper.pitch": arms_upper_default,
                         "body.arms.left.lower.roll": arms_lower_default,
-                        "body.torso.yaw": body_torso_yaw_default
+                        "body.torso.yaw": body_torso_yaw_default,
                     },
                 }
             )
             frames.append(
                 {
-                    "time": tag_time + 400,
+                    "time": tag_time + 1600,
                     "data": {
                         "body.head.yaw": head_yaw_default,
                         "body.head.pitch": head_pitch_default,
@@ -349,42 +320,25 @@ def arm_gesture_1(tag_positions):
                         "body.arms.right.lower.roll": arms_lower_default,
                         "body.arms.left.upper.pitch": arms_upper_default,
                         "body.arms.left.lower.roll": arms_lower_default,
-                        "body.torso.yaw": body_torso_yaw_default
+                        "body.torso.yaw": body_torso_yaw_default,
                     },
                 }
             )
 
     return frames
 
-    """
-    The possible gestures are:
-•⁠  ⁠<nod>content</nod> (4 syllables) = a head nod to mean yes
-•⁠  ⁠<shake>content</shake> (5 syllables) = a head shake to mean no
-•⁠  ⁠<beat>content</beat> (7 syllables) = arm movements that mimicks typical human beat gestures
-•⁠  ⁠<yippee>content</yippee> (10 syllables) = a full body celebration for something
-•⁠  ⁠<confused>content</confused> (10 syllables) = a gesture for stratching your head in confused manner
-    
-    arms_upper_default = -0.4
-    arms_lower_default = -1.0
 
-    body_head_pitch_default = 0.0
-    body_head_yaw_default = 0.0
-    body_head_roll_default = 0.0
-
-    body_torso_yaw_default = 0.0
-    """
-    
 def arm_gesture_2(tag_positions):
-    frames=[]
-    #random torso movement
-    random_torso= random.uniform(0.3, -0.3)
+    frames = []
+    # random torso movement
+    random_torso = random.uniform(0.3, -0.3)
     # random upper hand
     random_upper_hand = random.uniform(-1.4, -1.2)
     # random lower hand
     random_lower_hand = random.uniform(-1.2, -0.8)
     for tag in tag_positions:
         if tag["tag"] == "beat_2":
-            tag_time = int((tag["start_position"] / 4) * 1000)
+            tag_time = get_tag_time(tag["start_position"])
             frames.append(
                 {
                     "time": tag_time,

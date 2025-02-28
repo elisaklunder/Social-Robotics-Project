@@ -22,6 +22,7 @@ from twisted.internet.defer import inlineCallbacks
 load_dotenv()
 REALM = "rie.67c189a2a06ea6579d1440f0"
 
+
 class GameMaster:
     """
     A class that manages the interaction game between a robot and a user.
@@ -56,7 +57,7 @@ class GameMaster:
         # yield self.session.call("rom.optional.behavior.play", name="BlocklyStand")
         aa = yield self.session.call("rom.sensor.proprio.read")
         print(aa)
-        
+
         frames = [
             {
                 "time": 0,
@@ -138,9 +139,10 @@ class GameMaster:
             "rie.dialogue.say",
             text="Nice to meet you, I am Alphamini! What's your name?",
         )
-        yield movements.perform_movement(self.session, frames=hi(), force=True)
+        frames = hi()
+        yield movements.perform_movement(self.session, frames=frames, force=True)
         # yield self.session.call("rom.actuator.motor.write", frames=hi(), force=True)
-        
+
         yield self.session.subscribe(
             self.audio_processor.listen_continues, "rom.sensor.hearing.stream"
         )
