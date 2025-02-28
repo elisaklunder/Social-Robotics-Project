@@ -144,7 +144,7 @@ def nod(tag_positions):
                 {
                     "time": tag_time + 400,
                     "data": {
-                        "body.head.pitch": -0.1,
+                        "body.head.pitch": 0.1,
                         "body.head.yaw": head_yaw_default,
                         "body.head.roll": head_roll_default,
                         "body.arms.right.upper.pitch": arms_upper_default,
@@ -158,6 +158,36 @@ def nod(tag_positions):
             frames.append(
                 {
                     "time": tag_time + 800,
+                    "data": {
+                        "body.head.pitch": -0.1,
+                        "body.head.yaw": head_yaw_default,
+                        "body.head.roll": head_roll_default,
+                        "body.arms.right.upper.pitch": arms_upper_default,
+                        "body.arms.right.lower.roll": arms_lower_default,
+                        "body.arms.left.upper.pitch": arms_upper_default,
+                        "body.arms.left.lower.roll": arms_lower_default,
+                        "body.torso.yaw": body_torso_yaw_default
+                },
+                }
+            )
+            frames.append(
+                {
+                    "time": tag_time + 1200,
+                    "data": {
+                        "body.head.pitch": 0.1,
+                        "body.head.yaw": head_yaw_default,
+                        "body.head.roll": head_roll_default,
+                        "body.arms.right.upper.pitch": arms_upper_default,
+                        "body.arms.right.lower.roll": arms_lower_default,
+                        "body.arms.left.upper.pitch": arms_upper_default,
+                        "body.arms.left.lower.roll": arms_lower_default,
+                        "body.torso.yaw": body_torso_yaw_default
+                },
+                }
+            )
+            frames.append(
+                {
+                    "time": tag_time + 1600,
                     "data": {
                         "body.head.pitch": head_pitch_default,
                         "body.head.yaw": head_yaw_default,
@@ -246,8 +276,8 @@ def shake_head(tag_positions):
 def arm_gesture_1(tag_positions):
     frames=[]
     for tag in tag_positions:
-        if tag["tag"] == "arms":
-            tag_time = int((tag["syllable_position"] / 4) * 1000)
+        if tag["tag"] == "beat_1":
+            tag_time = int((tag["start_position"] / 4) * 1000)
             frames.append(
                 {
                     "time": tag_time - 1200,
@@ -354,7 +384,7 @@ def arm_gesture_2(tag_positions):
     random_lower_hand = random.uniform(-1.2, -0.8)
     for tag in tag_positions:
         if tag["tag"] == "beat_2":
-            tag_time = int((tag["syllable_position"] / 4) * 1000)
+            tag_time = int((tag["start_position"] / 4) * 1000)
             frames.append(
                 {
                     "time": tag_time,

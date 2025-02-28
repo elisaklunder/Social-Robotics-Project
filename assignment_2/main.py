@@ -20,9 +20,7 @@ from tagger import process_tagged_text
 from twisted.internet.defer import inlineCallbacks
 
 load_dotenv()
-REALM = os.getenv("REALM")
-print(REALM)
-
+REALM = "rie.67c189a2a06ea6579d1440f0"
 
 class GameMaster:
     """
@@ -55,7 +53,9 @@ class GameMaster:
         Returns:
             inlineCallbacks: Coroutine that executes the BlocklyStand behavior
         """
-        yield self.session.call("rom.optional.behavior.play", name="BlocklyStand")
+        # yield self.session.call("rom.optional.behavior.play", name="BlocklyStand")
+        aa = yield self.session.call("rom.sensor.proprio.read")
+        print(aa)
         
         frames = [
             {
@@ -72,9 +72,8 @@ class GameMaster:
                 },
             }
         ]
-        print(frames)
-        # yield movements.perform_movement(self.session, frames=frames, force=True)
-        yield self.session.call("rom.actuator.motor.write", frames=frames, force=True)
+        yield movements.perform_movement(self.session, frames=frames, force=True)
+        # yield self.session.call("rom.actuator.motor.write", frames=frames, force=True)
 
     @inlineCallbacks
     def start_game(self):
@@ -139,10 +138,9 @@ class GameMaster:
             "rie.dialogue.say",
             text="Nice to meet you, I am Alphamini! What's your name?",
         )
-        # yield movements.perform_movement(self.session, frames=hi(), force=True)
-        yield self.session.call("rom.actuator.motor.write", frames=hi(), force=True)
+        yield movements.perform_movement(self.session, frames=hi(), force=True)
+        # yield self.session.call("rom.actuator.motor.write", frames=hi(), force=True)
         
-
         yield self.session.subscribe(
             self.audio_processor.listen_continues, "rom.sensor.hearing.stream"
         )
@@ -150,7 +148,7 @@ class GameMaster:
 
         while True:
             if not self.audio_processor.new_words:
-                sleep(0.5)  # VERY IMPORTANT
+                yield sleep(0.5)  # VERY IMPORTANT
                 print("I am recording")
             else:
                 word_array = self.audio_processor.give_me_words()
@@ -164,12 +162,12 @@ class GameMaster:
                 self.session.call("rie.dialogue.say", text=cleaned_answer, lang="en")
 
                 if frames:
-                    # yield movements.perform_movement(
-                    #     self.session, frames=frames, force=True
-                    # )
-                    yield self.session.call(
-                        "rom.actuator.motor.write", frames=frames, force=True
+                    yield movements.perform_movement(
+                        self.session, frames=frames, force=True
                     )
+                    # yield self.session.call(
+                    #     "rom.actuator.motor.write", frames=frames, force=True
+                    # )
 
                 # The loop continues until a 'goodbye' response is triggered
                 if "goodbye" in cleaned_answer.lower():

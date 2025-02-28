@@ -8,7 +8,7 @@ from gemini import Blabber
 from twisted.internet.defer import inlineCallbacks
 
 load_dotenv()
-REALM = os.getenv("REALM")
+REALM = "rie.67c189a2a06ea6579d1440f0"
 
 
 class GameMaster:
