@@ -29,7 +29,7 @@ def process_tagged_text(text):
     cleaned_text = ""   
     syllable_count = 1 
     
-    pattern = re.compile(r'<(\w+)>(.*?)</\1>')  # match <tag>word</tag>
+    pattern = re.compile(r'<(\w+)>(.*?)</\1>', re.DOTALL)  # match <tag>multiple words</tag>
     
     pos = 0 
     for match in pattern.finditer(text):
@@ -46,7 +46,7 @@ def process_tagged_text(text):
         tag_positions.append({
             "tag": tag_type,
             "content": tag_content,
-            "syllable_position": syllable_count
+            "start_position": syllable_count
         })
         
         cleaned_text += tag_content

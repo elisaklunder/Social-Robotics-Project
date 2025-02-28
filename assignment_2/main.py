@@ -5,11 +5,21 @@ from alpha_mini_rug.speech_to_text import SpeechToText
 from autobahn.twisted.component import Component, run
 from autobahn.twisted.util import sleep
 from dotenv import load_dotenv
-from gestures import make_gestures, arms_lower_default, arms_upper_default, body_head_pitch_default
 from gemini import Blabber
+from gestures import (
+    arms_lower_default,
+    arms_upper_default,
+    head_pitch_default,
+    head_roll_default,
+    head_yaw_default,
+    make_gestures,
+    hi,
+    listen,
+    dont_listen,
+)
+
 from tagger import process_tagged_text
 from twisted.internet.defer import inlineCallbacks
-
 
 load_dotenv()
 REALM = os.getenv("REALM")
@@ -47,18 +57,20 @@ class GameMaster:
             inlineCallbacks: Coroutine that executes the BlocklyStand behavior
         """
         yield self.session.call("rom.optional.behavior.play", name="BlocklyStand")
-        frame = [{
-            "time": 0,
-            "data": {
-                "body.head.pitch": body_head_pitch_default,
-                "body.arms.right.upper.pitch": arms_upper_default,
-                "body.arms.right.lower.roll": arms_lower_default,
-            },
-        }]
-        yield movements.perform_movement(
-            self.session, frames=frame, force=True
-        )
-        
+        frame = [
+            {
+                "time": 0,
+                "data": {
+                    "body.head.pitch": head_pitch_default,
+                    "body.head.yaw": head_yaw_default,
+                    "body.head.roll": head_roll_default,
+                    "body.arms.right.upper.pitch": arms_upper_default,
+                    "body.arms.right.lower.roll": arms_lower_default,
+                },
+            }
+        ]
+        yield movements.perform_movement(self.session, frames=frame, force=True)
+
     @inlineCallbacks
     def start_game(self):
         """
@@ -123,6 +135,7 @@ class GameMaster:
             "rie.dialogue.say",
             text="Nice to meet you, I am Alphamini! What's your name?",
         )
+        yield movements.perform_movement(self.session, frames=hi(), force=True)
 
         yield self.session.subscribe(
             self.audio_processor.listen_continues, "rom.sensor.hearing.stream"
@@ -131,26 +144,24 @@ class GameMaster:
 
         while True:
             if not self.audio_processor.new_words:
-                yield sleep(0.5)  # VERY IMPORTANT
+                yield movements.perform_movement(self.session, frames=listen(), force=True)
                 print("I am recording")
             else:
+                yield movements.perform_movement(self.session, frames=dont_listen(), force=True)
                 word_array = self.audio_processor.give_me_words()
                 print("heard: ", word_array[-1])
                 user_input = word_array[-1]
                 answer = self.conversation_engine.ask(user_input)
                 print("answer: ", answer)
-                
+
                 tag_positions, cleaned_answer = process_tagged_text(answer)
-                frames, naughty_frame = make_gestures(tag_positions)
-                
-                print("frames: ", frames)
-                
-                sleep(naughty_frame["time"] / 1000)
-                
+                frames = make_gestures(tag_positions)                
                 self.session.call("rie.dialogue.say", text=cleaned_answer, lang="en")
-                yield movements.perform_movement(
-                    self.session, frames=frames, force=True
-                )
+
+                if frames:
+                    yield movements.perform_movement(
+                        self.session, frames=frames, force=True
+                    )
 
                 # The loop continues until a 'goodbye' response is triggered
                 if "goodbye" in cleaned_answer.lower():
