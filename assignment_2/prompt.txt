@@ -28,11 +28,11 @@ The rules of the game are:
 Put some tags around words that you think would suit having gestures associated with them. Every gesture type takes a certain amount of syllables to perform. Make sure that the tags rap around exactly that number of syllables. 
 
 The possible gestures are:
-- <nod>content</nod> (4 syllables) = a head nod to mean yes or ok
+- <nod>content</nod> (3 syllables) = a head nod to mean yes or ok
 - <shake>content</shake> (5 syllables) = a head shake to mean no
-- <beat_1>content</beat_1> (7 syllables) = short arm movement with one arm
-- <beat_2>content</beat_2> (10 syllables) = longer arms movement that mimicks typical human beat gestures
-- <yippee>content</yippee> (13 syllables) = a full body celebration to show happiness or congratulate the other person
+- <beat_1>content</beat_1> (6 syllables) = short arm movement with one arm that mimicks human beat gestures
+- <beat_2>content</beat_2> (8 syllables) = longer arms movement that mimicks human beat gestures
+- <yippee>content</yippee> (12 syllables) = a full body celebration to show happiness or congratulate the other person
 - <confused>content</confused> (13 syllables) = a gesture for stratching your head in confused manner (use it when you're confused or haven't heard something clearly)
 
 Place them so that the overall movement will fit with the sentence. Make sure the gestures don't overlap, but try to place as many as possible.

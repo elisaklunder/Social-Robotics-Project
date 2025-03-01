@@ -16,11 +16,11 @@ from gestures import (
     hi,
     make_gestures,
 )
-from tagger import process_tagged_text
+from process_tags import process_tagged_text
 from twisted.internet.defer import inlineCallbacks
 
 load_dotenv()
-REALM = "rie.67c189a2a06ea6579d1440f0"
+REALM = os.getenv("REALM")
 
 
 class GameMaster:
@@ -54,9 +54,8 @@ class GameMaster:
         Returns:
             inlineCallbacks: Coroutine that executes the BlocklyStand behavior
         """
-        # yield self.session.call("rom.optional.behavior.play", name="BlocklyStand")
-        aa = yield self.session.call("rom.sensor.proprio.read")
-        print(aa)
+        # aa = yield self.session.call("rom.sensor.proprio.read")
+        # print(aa)
 
         frames = [
             {
@@ -74,7 +73,6 @@ class GameMaster:
             }
         ]
         yield movements.perform_movement(self.session, frames=frames, force=True)
-        # yield self.session.call("rom.actuator.motor.write", frames=frames, force=True)
 
     @inlineCallbacks
     def start_game(self):
@@ -141,7 +139,6 @@ class GameMaster:
         )
         frames = hi()
         yield movements.perform_movement(self.session, frames=frames, force=True)
-        # yield self.session.call("rom.actuator.motor.write", frames=hi(), force=True)
 
         yield self.session.subscribe(
             self.audio_processor.listen_continues, "rom.sensor.hearing.stream"
@@ -167,10 +164,7 @@ class GameMaster:
                     yield movements.perform_movement(
                         self.session, frames=frames, force=True
                     )
-                    # yield self.session.call(
-                    #     "rom.actuator.motor.write", frames=frames, force=True
-                    # )
-
+            
                 # The loop continues until a 'goodbye' response is triggered
                 if "goodbye" in cleaned_answer.lower():
                     break
