@@ -10,3 +10,4 @@ Twisted==24.11.0
 google-genai
 python-dotenv
 pyphen==0.17.2
+deepface
