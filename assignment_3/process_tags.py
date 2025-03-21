@@ -4,6 +4,12 @@ import pyphen
 
 dic = pyphen.Pyphen(lang="en")
 
+def calculate_text_syllables(text: str) -> int:
+    syllable_count = 1
+    for word in re.findall(r"\b\w+\b", text):
+            syllable_count += count_syllables(word)
+
+    return syllable_count
 
 def count_syllables(word: str) -> int:
     """
@@ -54,11 +60,17 @@ def process_tagged_text(text: str) -> tuple[list[dict], str]:
         before = text[pos:start]
         cleaned_text += before
 
+        # calculating the start position
         for word in re.findall(r"\b\w+\b", before):
             syllable_count += count_syllables(word)
 
+        # calculating the end position 
+        end_position = syllable_count
+        for word in re.findall(r"\b\w+\b", tag_content):
+            end_position += count_syllables(word)
+
         tag_positions.append(
-            {"tag": tag_type, "content": tag_content, "start_position": syllable_count}
+            {"tag": tag_type, "content": tag_content, "start_position": syllable_count, "end_position": end_position}
         )
 
         cleaned_text += tag_content

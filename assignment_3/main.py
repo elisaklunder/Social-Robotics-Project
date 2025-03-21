@@ -15,12 +15,13 @@ from gestures import (
     head_yaw_default,
     hi,
     make_gestures,
+    get_tag_time
 )
-from process_tags import process_tagged_text
+from process_tags import process_tagged_text, calculate_text_syllables
 from twisted.internet.defer import inlineCallbacks
 
 load_dotenv()
-REALM = "rie.67d2b12999b259cf43b05316"
+REALM = "rie.67dd3d77540602623a34cd6a"
 
 
 class GameMaster:
@@ -165,6 +166,20 @@ class GameMaster:
                     yield movements.perform_movement(
                         self.session, frames=frames, force=True
                     )
+                    # if there is time left after the last gesture, the robot should sleep for a bit
+                    last_tag_syllable_position = tag_positions[-1]["end_position"]
+                    # number of syllables in the whole text
+                    text_syllable_num = calculate_text_syllables(cleaned_answer)
+                    leftover_syllables = text_syllable_num - last_tag_syllable_position
+                    sleepy_time = get_tag_time(start_position=leftover_syllables) # time estimate the robot needs to sleep after performing its gestures
+                    print(f"sleep time: {sleepy_time}")
+                    yield sleep(sleepy_time/1000)
+                else:
+                    # if there are no frames then the robot should sleep for the entire duration
+                    text_syllable_num = calculate_text_syllables(cleaned_answer)
+                    sleepy_time = get_tag_time(start_position=leftover_syllables)
+                    print(f"sleep time: {sleepy_time}")
+                    yield sleep(sleepy_time/1000)
 
                 # The loop continues until a 'goodbye' response is triggered
                 if "goodbye" in cleaned_answer.lower():
