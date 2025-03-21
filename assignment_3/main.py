@@ -154,7 +154,18 @@ class GameMaster:
             else:
                 word_array = self.audio_processor.give_me_words()
                 print("heard: ", word_array[-1])
-                user_input = word_array[-1]
+                # getting the user input
+                user_input = word_array[-1] # string
+
+                # checking if the confusion is detected
+                # needs to check if the robot is word keeper, and if confusion was detected, and if the answer was negative twice in a row OR answer was negative three times in a row
+                confusion_detected = False # confusion detection
+                
+                llm_input = f"""
+                message {{{user_input}}}
+
+                confusion {{{'detected' if confusion_detected else 'not detected'}}}
+                """.strip()
                 answer = self.conversation_engine.ask(user_input)
                 print("answer: ", answer)
 
