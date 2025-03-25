@@ -9,7 +9,7 @@ from transformers import pipeline
 from twisted.internet.defer import inlineCallbacks
 
 load_dotenv()
-REALM = "rie.67d2b12999b259cf43b05316"
+REALM = os.getenv("REALM")
 
 
 class EmotionHandler:
@@ -33,8 +33,8 @@ class EmotionHandler:
         if self.frame_count % 10 == 0:
             image = Image.open(io.BytesIO(frame["data"]["body.head.eyes"]))
             predictions = self.pipe(image)
-            domnant_emotion = max(predictions, key=lambda x: x["score"])
-            print(domnant_emotion["label"])
+            dominant_emotion = max(predictions, key=lambda x: x["score"])
+            if dominant_emotion["label"] == "neutral" or dominant_emotion["label"] == "sad"
 
 
 @inlineCallbacks

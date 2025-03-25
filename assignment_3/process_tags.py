@@ -46,6 +46,8 @@ def process_tagged_text(text: str) -> tuple[list[dict], str]:
     tag_positions = []
     cleaned_text = ""
     syllable_count = 1
+    
+    text = text.lower()
 
     pattern = re.compile(
         r"<(\w+)>(.*?)</\1>", re.DOTALL

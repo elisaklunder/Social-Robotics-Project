@@ -21,7 +21,7 @@ from process_tags import process_tagged_text, calculate_text_syllables
 from twisted.internet.defer import inlineCallbacks
 
 load_dotenv()
-REALM = "rie.67dd3d77540602623a34cd6a"
+REALM = os.getenv("REALM")
 
 
 class GameMaster:
@@ -141,7 +141,8 @@ class GameMaster:
         )
         frames = hi()
         yield movements.perform_movement(self.session, frames=frames, force=True)
-
+        yield sleep(4)
+        
         yield self.session.subscribe(
             self.audio_processor.listen_continues, "rom.sensor.hearing.stream"
         )
@@ -177,18 +178,14 @@ class GameMaster:
                     yield movements.perform_movement(
                         self.session, frames=frames, force=True
                     )
-                    # if there is time left after the last gesture, the robot should sleep for a bit
-                    last_tag_syllable_position = tag_positions[-1]["end_position"]
-                    # number of syllables in the whole text
                     text_syllable_num = calculate_text_syllables(cleaned_answer)
-                    leftover_syllables = text_syllable_num - last_tag_syllable_position
-                    sleepy_time = get_tag_time(start_position=leftover_syllables) # time estimate the robot needs to sleep after performing its gestures
+                    sleepy_time = get_tag_time(start_position=text_syllable_num + 5) # time estimate the robot needs to sleep after performing its gestures
                     print(f"sleep time: {sleepy_time}")
                     yield sleep(sleepy_time/1000)
                 else:
                     # if there are no frames then the robot should sleep for the entire duration
                     text_syllable_num = calculate_text_syllables(cleaned_answer)
-                    sleepy_time = get_tag_time(start_position=leftover_syllables)
+                    sleepy_time = get_tag_time(start_position=text_syllable_num + 5)
                     print(f"sleep time: {sleepy_time}")
                     yield sleep(sleepy_time/1000)
 
