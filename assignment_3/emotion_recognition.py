@@ -1,10 +1,11 @@
 import io
+import os
 
 from autobahn.twisted.component import Component, run
-from deepface import DeepFace
 from dotenv import load_dotenv
-from tqdm import tqdm
 from PIL import Image
+os.environ["TQDM_DISABLE"] = "1"
+from transformers import pipeline
 from twisted.internet.defer import inlineCallbacks
 
 load_dotenv()
@@ -16,6 +17,11 @@ class EmotionHandler:
         self.emotion = None
         self.frame_count = 0
         self.session = session
+        self.pipe = pipeline(
+            "image-classification",
+            model="dima806/facial_emotions_image_detection",
+            use_fast=True,
+        )
 
     @inlineCallbacks
     def you_shall_see(self):
@@ -26,14 +32,9 @@ class EmotionHandler:
         self.frame_count += 1
         if self.frame_count % 10 == 0:
             image = Image.open(io.BytesIO(frame["data"]["body.head.eyes"]))
-            image.save("image.jpg")
-            face_analysis = DeepFace.analyze(
-                img_path="image.jpg",
-                actions=["emotion"],
-                detector_backend="opencv",
-            )
-            self.emotion = face_analysis["dominant_emotion"]
-            print(self.emotion)
+            predictions = self.pipe(image)
+            domnant_emotion = max(predictions, key=lambda x: x["score"])
+            print(domnant_emotion["label"])
 
 
 @inlineCallbacks
