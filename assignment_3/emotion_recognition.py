@@ -12,7 +12,7 @@ load_dotenv()
 REALM = os.getenv("REALM")
 
 
-class EmotionHandler:
+class EmotionRecognition:
     def __init__(self, session):
         self.emotion = None
         self.frame_count = 0
@@ -26,35 +26,25 @@ class EmotionHandler:
     @inlineCallbacks
     def you_shall_see(self):
         yield self.session.subscribe(self.vision, "rom.sensor.sight.stream")
-        yield self.session.call("rom.sensor.sight.stream")
+        yield self.session.call("rom.sensor.sight.read")
 
     def vision(self, frame):
         self.frame_count += 1
         if self.frame_count % 10 == 0:
             image = Image.open(io.BytesIO(frame["data"]["body.head.eyes"]))
+            
             predictions = self.pipe(image)
             dominant_emotion = max(predictions, key=lambda x: x["score"])
-            if dominant_emotion["label"] == "neutral" or dominant_emotion["label"] == "sad"
-
-
-@inlineCallbacks
-def main(session: Component, details):
-    game_master = EmotionHandler(session)
-    yield game_master.you_shall_see()
-
-
-wamp = Component(
-    transports=[
-        {
-            "url": "ws://wamp.robotsindeklas.nl",
-            "serializers": ["msgpack"],
-            "max_retries": 0,
-        }
-    ],
-    realm=REALM,
-)
-
-wamp.on_join(main)
-
-if __name__ == "__main__":
-    run([wamp])
+            if dominant_emotion["label"] == "neutral" or dominant_emotion["label"] == "happy":
+                self.emotion = "not confused"
+            else:
+                self.emotion = "confused"
+                
+                
+            
+    def get_emotion(self):
+        return self.emotion
+    
+    def reset_emotion(self):
+        self.emotion = None     
+    
