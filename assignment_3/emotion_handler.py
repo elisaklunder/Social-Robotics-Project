@@ -5,6 +5,7 @@ from autobahn.twisted.component import Component, run
 from dotenv import load_dotenv
 from PIL import Image
 
+from gemini import Blabber
 from emotion_recognition import EmotionRecognition
 os.environ["TQDM_DISABLE"] = "1"
 from twisted.internet.defer import inlineCallbacks
@@ -16,18 +17,43 @@ REALM = os.getenv("REALM")
 class EmotionHandler:
     def __init__(self, session):
         self.emotion_recognition = EmotionRecognition(session)
+        self.llm = Blabber(prompt_file="assignment_3/prompt_detect.txt")
+        self.detected_emotion = None
+        self.answer_streak = []
 
     @inlineCallbacks
     def start_emotion_recognition(self):
-        yield self.emotion_recognition.you_shall_see()
-        print(self.emotion_recognition.get_emotion())
+        self.detected_emotion = yield self.emotion_recognition.you_shall_see()
+        print("detected emotion:", self.detected_emotion)   
+        
+    def detect_positive_response(self, llm_answer):
+        detection = self.llm.ask(llm_answer)
+        if "true" in detection.lower():
+            self.answer_streak.append("True")
+        elif "false" in detection.lower(): 
+            self.answer_streak.append("False")
+        else:
+            self.answer_streak.append("None")
+        
+    def is_user_confused(self):
+        confused = False
+        
+        # if len(self.answer_streak) >= 3:
+        #     if self.answer_streak[-3:] == ["False", "False", "False"]:
+        #         confused = True
+        if len(self.answer_streak) >= 2:
+            if self.answer_streak[-2:] == ["False", "False"] and self.detected_emotion == "confused":
+                confused = True
+                print("CONFUSED")
+                
+        return confused
+        
         
 
 @inlineCallbacks
 def main(session: Component, details):
     emotion_handler = EmotionHandler(session)
-    for i in range(100):
-        yield emotion_handler.start_emotion_recognition()
+    yield emotion_handler.start_emotion_recognition()
 
 wamp = Component(
     transports=[

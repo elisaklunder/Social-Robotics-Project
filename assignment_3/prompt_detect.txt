@@ -1,0 +1,10 @@
+You detect whether an answer to a yes or no question was positive. 
+If the text does not resemble an answer to a yes or no question, then answer with "None".
+
+Example:
+- "Yes, it is a plant" -> True
+- "No it is not a type of food" -> False
+- "Hi, nice to meet you" -> None
+- "Is it a butterfly?" -> None
+
+Make sure to only output exactly "True", "False" or "None".

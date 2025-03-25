@@ -25,21 +25,28 @@ class EmotionRecognition:
 
     @inlineCallbacks
     def you_shall_see(self):
-        yield self.session.subscribe(self.vision, "rom.sensor.sight.stream")
-        yield self.session.call("rom.sensor.sight.read")
+        # yield self.session.subscribe(self.vision, "rom.sensor.sight.read")
+        frames = yield self.session.call("rom.sensor.sight.read", ubi=["body.head.eyes"], time=1000)
+       
+        for frame in frames:
+            emotion = self.vision(frame.get("data").get("body.head.eyes"))
+            if emotion == "confused":
+                return"confused"
+            
+        return "not confused"
 
     def vision(self, frame):
-        self.frame_count += 1
-        if self.frame_count % 10 == 0:
-            image = Image.open(io.BytesIO(frame["data"]["body.head.eyes"]))
+        if frame is None:
+            return
+        image = Image.open(io.BytesIO(frame))
+        predictions = self.pipe(image)
+        dominant_emotion = max(predictions, key=lambda x: x["score"])
+        if dominant_emotion["label"] == "neutral" or dominant_emotion["label"] == "happy":
+            emotion = "not confused"
+        else:
+            emotion = "confused"
+        return emotion
             
-            predictions = self.pipe(image)
-            dominant_emotion = max(predictions, key=lambda x: x["score"])
-            if dominant_emotion["label"] == "neutral" or dominant_emotion["label"] == "happy":
-                self.emotion = "not confused"
-            else:
-                self.emotion = "confused"
-                
                 
             
     def get_emotion(self):

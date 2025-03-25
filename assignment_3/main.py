@@ -5,6 +5,7 @@ from alpha_mini_rug.speech_to_text import SpeechToText
 from autobahn.twisted.component import Component, run
 from autobahn.twisted.util import sleep
 from dotenv import load_dotenv
+from emotion_handler import EmotionHandler
 from gemini import Blabber
 from gestures import (
     arms_lower_default,
@@ -46,6 +47,7 @@ class GameMaster:
         self.audio_processor.silence_threshold2 = 400  # hearing threshold
         self.audio_processor.logging = False
         self.conversation_engine = Blabber()
+        self.emotion_handler = EmotionHandler(session)
 
     @inlineCallbacks
     def default_state(self):
@@ -160,17 +162,21 @@ class GameMaster:
 
                 # checking if the confusion is detected
                 # needs to check if the robot is word keeper, and if confusion was detected, and if the answer was negative twice in a row OR answer was negative three times in a row
-                confusion_detected = False # confusion detection
+                
+                confusion_detected = self.emotion_handler.is_user_confused()
                 
                 llm_input = f"""
                 message {{{user_input}}}
-
+                
                 confusion {{{'detected' if confusion_detected else 'not detected'}}}
                 """.strip()
-                answer = self.conversation_engine.ask(user_input)
-                print("answer: ", answer)
+                
+                llm_answer = self.conversation_engine.ask(llm_input)
+                print("answer: ", llm_answer)
+                
+                self.emotion_handler.detect_positive_response(llm_answer)
 
-                tag_positions, cleaned_answer = process_tagged_text(answer)
+                tag_positions, cleaned_answer = process_tagged_text(llm_answer)
                 frames = make_gestures(tag_positions)
                 self.session.call("rie.dialogue.say", text=cleaned_answer, lang="it")
 
@@ -179,7 +185,7 @@ class GameMaster:
                         self.session, frames=frames, force=True
                     )
                     text_syllable_num = calculate_text_syllables(cleaned_answer)
-                    sleepy_time = get_tag_time(start_position=text_syllable_num + 5) # time estimate the robot needs to sleep after performing its gestures
+                    sleepy_time = get_tag_time(start_position=text_syllable_num + 5)
                     print(f"sleep time: {sleepy_time}")
                     yield sleep(sleepy_time/1000)
                 else:
@@ -188,6 +194,8 @@ class GameMaster:
                     sleepy_time = get_tag_time(start_position=text_syllable_num + 5)
                     print(f"sleep time: {sleepy_time}")
                     yield sleep(sleepy_time/1000)
+                    
+                self.emotion_handler.start_emotion_recognition()
 
                 # The loop continues until a 'goodbye' response is triggered
                 if "goodbye" in cleaned_answer.lower():

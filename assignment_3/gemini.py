@@ -16,10 +16,10 @@ class Blabber:
         - A valid Gemini API key
         - A 'prompt.txt' file in the same folder containing system instructions
     """
-    def __init__(self):
+    def __init__(self, prompt_file="assignment_3/prompt.txt"):
         client = genai.Client(api_key=api_key)
         
-        with open("assignment_2/prompt.txt", "r") as file:
+        with open(prompt_file, "r") as file:
             sys_instruct = file.read()
 
         self.chat = client.chats.create(
