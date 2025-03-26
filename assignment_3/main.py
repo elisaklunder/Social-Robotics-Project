@@ -23,7 +23,7 @@ from twisted.internet.defer import inlineCallbacks
 
 load_dotenv()
 REALM = os.getenv("REALM")
-
+RUG_FUNCTION = False
 
 class GameMaster:
     """
@@ -75,7 +75,10 @@ class GameMaster:
                 },
             }
         ]
-        yield movements.perform_movement(self.session, frames=frames, force=True)
+        if RUG_FUNCTION: 
+            yield movements.perform_movement(self.session, frames=frames, force=True)
+        else:
+            yield self.session.call("rom.actuator.motor.write", frames=frames, force=True)
 
     @inlineCallbacks
     def start_game(self):
@@ -142,7 +145,10 @@ class GameMaster:
             lang="it",
         )
         frames = hi()
-        yield movements.perform_movement(self.session, frames=frames, force=True)
+        if RUG_FUNCTION: 
+            yield movements.perform_movement(self.session, frames=frames, force=True)
+        else:
+            yield self.session.call("rom.actuator.motor.write", frames=frames, force=True)
         yield sleep(4)
         
         yield self.session.subscribe(
@@ -181,9 +187,10 @@ class GameMaster:
                 self.session.call("rie.dialogue.say", text=cleaned_answer, lang="it")
 
                 if frames:
-                    yield movements.perform_movement(
-                        self.session, frames=frames, force=True
-                    )
+                    if RUG_FUNCTION: 
+                        yield movements.perform_movement(self.session, frames=frames, force=True)
+                    else:
+                        yield self.session.call("rom.actuator.motor.write", frames=frames, force=True)
                     text_syllable_num = calculate_text_syllables(cleaned_answer)
                     sleepy_time = get_tag_time(start_position=text_syllable_num + 5)
                     print(f"sleep time: {sleepy_time}")
