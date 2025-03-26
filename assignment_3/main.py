@@ -23,7 +23,7 @@ from twisted.internet.defer import inlineCallbacks
 
 load_dotenv()
 REALM = os.getenv("REALM")
-RUG_FUNCTION = False
+RUG_FUNCTION = True
 
 class GameMaster:
     """
@@ -141,7 +141,7 @@ class GameMaster:
 
         self.session.call(
             "rie.dialogue.say",
-            text="Nice to meet you, I am Alphamini! What's your name?",
+            text="Ciao, Ai am Alphamini! What's your name?",
             lang="it",
         )
         frames = hi()
@@ -170,6 +170,7 @@ class GameMaster:
                 # needs to check if the robot is word keeper, and if confusion was detected, and if the answer was negative twice in a row OR answer was negative three times in a row
                 
                 confusion_detected = self.emotion_handler.is_user_confused()
+                print("Is user confused??? ", confusion_detected)
                 
                 llm_input = f"""
                 message {{{user_input}}}
