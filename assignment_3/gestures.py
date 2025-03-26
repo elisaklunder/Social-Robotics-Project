@@ -18,7 +18,7 @@ def get_tag_time(start_position: int) -> int:
     Returns:
         int: The calculated time in milliseconds for when the gesture tag should occur
     """
-    return int(((start_position - 1) / 4) * 1000)
+    return int(((start_position - 1) / 4.3) * 1000)
 
 
 def hi() -> List[Dict[str, Union[int, Dict[str, float]]]]:

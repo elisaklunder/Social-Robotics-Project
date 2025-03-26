@@ -44,7 +44,7 @@ class GameMaster:
         self.session = session
         self.audio_processor = SpeechToText()
         self.audio_processor.silence_time = 0.2  # when to stop recording
-        self.audio_processor.silence_threshold2 = 400  # hearing threshold
+        self.audio_processor.silence_threshold2 = 100  # hearing threshold
         self.audio_processor.logging = False
         self.conversation_engine = Blabber()
         self.emotion_handler = EmotionHandler(session)
@@ -59,6 +59,7 @@ class GameMaster:
         """
         # aa = yield self.session.call("rom.sensor.proprio.read")
         # print(aa)
+        yield self.session.call("rom.optional.behavior.play", name="BlocklyStand")
 
         frames = [
             {
@@ -181,7 +182,7 @@ class GameMaster:
                 llm_answer = self.conversation_engine.ask(llm_input)
                 print("answer: ", llm_answer)
                 
-                self.emotion_handler.detect_positive_response(llm_answer)
+                self.emotion_handler.detect_positive_response(f"{user_input} \n {llm_answer}")
 
                 tag_positions, cleaned_answer = process_tagged_text(llm_answer)
                 frames = make_gestures(tag_positions)
@@ -193,13 +194,13 @@ class GameMaster:
                     else:
                         yield self.session.call("rom.actuator.motor.write", frames=frames, force=True)
                     text_syllable_num = calculate_text_syllables(cleaned_answer)
-                    sleepy_time = get_tag_time(start_position=text_syllable_num + 5)
+                    sleepy_time = get_tag_time(start_position=text_syllable_num + 13)
                     print(f"sleep time: {sleepy_time}")
                     yield sleep(sleepy_time/1000)
                 else:
                     # if there are no frames then the robot should sleep for the entire duration
                     text_syllable_num = calculate_text_syllables(cleaned_answer)
-                    sleepy_time = get_tag_time(start_position=text_syllable_num + 5)
+                    sleepy_time = get_tag_time(start_position=text_syllable_num + 13)
                     print(f"sleep time: {sleepy_time}")
                     yield sleep(sleepy_time/1000)
                     
