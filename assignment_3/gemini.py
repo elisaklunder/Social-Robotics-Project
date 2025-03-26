@@ -25,7 +25,7 @@ class Blabber:
         self.chat = client.chats.create(
             model="gemini-2.0-flash",
             config=types.GenerateContentConfig(
-                max_output_tokens=150, temperature=0.1, system_instruction=sys_instruct
+                max_output_tokens=500, temperature=0.1, system_instruction=sys_instruct
             ),
         )
 
